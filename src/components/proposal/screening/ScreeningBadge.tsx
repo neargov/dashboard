@@ -193,7 +193,15 @@ export function ScreeningBadge({ screening }: ScreeningBadgeProps) {
           <CardContent className="space-y-4">
             {/* Score Summary */}
             <div className="grid grid-cols-2 gap-4">
-              <Card className="bg-[#5CEFBB] border border-[#5CEFBB] text-black">
+              <Card
+                className={
+                  screening.qualityScore >= 0.66
+                    ? "bg-[#5CEFBB] border border-[#5CEFBB] text-black"
+                    : screening.qualityScore >= 0.33
+                    ? "bg-[#FFEAC2] border border-[#FFEAC2] text-black"
+                    : "bg-[#FFBEB5] border border-[#FFBEB5] text-black"
+                }
+              >
                 <CardContent className="pt-6 space-y-2">
                   <div className="text-sm font-semibold tracking-wide text-black uppercase">
                     Quality

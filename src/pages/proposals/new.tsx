@@ -5,6 +5,7 @@ import { useNear } from "@/hooks/useNear";
 import type { Evaluation } from "@/types/evaluation";
 import { ProposalForm } from "@/components/proposal/ProposalForm";
 import { ScreeningResults } from "@/components/proposal/screening/ScreeningResults";
+import { ScreeningBadge } from "@/components/proposal/screening/ScreeningBadge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle, AlertTriangle } from "lucide-react";
 
@@ -75,19 +76,17 @@ export default function NewProposalPage() {
         <div className="space-y-3 text-center">
           <h1 className="text-3xl font-semibold">New Proposal</h1>
           <p className="text-muted-foreground">
-            Use NEAR AI to privately check against established criteria, then
-            publish to the forum.
+            Use NEAR AI to privately check against established criteria.
           </p>
         </div>
 
         {/* Rate limit info for anonymous users */}
         {!signedAccountId && remainingEvaluations !== null && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
+          <Alert className="border-green-500 bg-green-50 text-green-900">
             <AlertDescription>
-              You have <strong>{remainingEvaluations}</strong> free evaluation
-              {remainingEvaluations !== 1 ? "s" : ""} remaining. Connect your
-              NEAR wallet for unlimited evaluations.
+              {`You have ${remainingEvaluations} free evaluation${
+                remainingEvaluations !== 1 ? "s" : ""
+              } remaining. Connect your NEAR wallet for unlimited evaluations.`}
             </AlertDescription>
           </Alert>
         )}
@@ -117,26 +116,33 @@ export default function NewProposalPage() {
 
         {result && (
           <>
-            <div className="rounded-lg border p-6 bg-card">
-              <ScreeningResults evaluation={result} />
-            </div>
-
             {result.overallPass ? (
               <Alert className="border-green-500 bg-green-50 text-green-900">
-                <CheckCircle className="h-4 w-4" />
                 <AlertDescription>
                   Your proposal is ready to publish to Discourse.
                 </AlertDescription>
               </Alert>
             ) : (
               <Alert className="border-yellow-500 bg-yellow-50 text-yellow-900">
-                <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Your proposal didn't pass screening. Review the feedback
-                  above, make edits, and run the screen again.
+                  Your proposal needs improvement. Review the feedback below,
+                  make changes, and screen it again.
                 </AlertDescription>
               </Alert>
             )}
+            <div className="space-y-3">
+              <ScreeningBadge
+                screening={{
+                  evaluation: result,
+                  title: title || "Draft Proposal",
+                  nearAccount: signedAccountId || "Anonymous",
+                  timestamp: new Date().toISOString(),
+                  revisionNumber: 1,
+                  qualityScore: result.qualityScore,
+                  attentionScore: result.attentionScore,
+                }}
+              />
+            </div>
           </>
         )}
       </div>
