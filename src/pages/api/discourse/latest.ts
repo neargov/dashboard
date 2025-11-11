@@ -11,12 +11,9 @@ export default async function handler(
   try {
     const DISCOURSE_URL = process.env.DISCOURSE_URL || "https://gov.near.org";
 
-    // Fetch latest topics with optional query parameters
-    const order = req.query.order || "default";
-    const perPage = req.query.per_page || 100;
-
-    // Use category-specific endpoint
-    const url = `${DISCOURSE_URL}/latest.json?order=${order}&per_page=${perPage}`;
+    // Use category-specific endpoint for proposals (category 168)
+    const perPage = req.query.per_page || 30;
+    const url = `${DISCOURSE_URL}/c/house-of-stake/proposals/168.json?per_page=${perPage}`;
 
     const response = await fetch(url, {
       headers: {
@@ -76,9 +73,10 @@ export default async function handler(
       return text;
     };
 
+    // Filter out the "About the Proposals category" topic
     const transformedPosts =
       data.topic_list?.topics
-        ?.filter((topic: any) => topic.category_id === 168)
+        ?.filter((topic: any) => topic.id !== 41681) // Exclude the "About" topic
         ?.map((topic: any) => {
           const creatorPosterId = topic.posters?.[0]?.user_id;
           const creatorUser = data.users?.find(
